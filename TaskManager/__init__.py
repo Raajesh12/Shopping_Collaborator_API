@@ -29,11 +29,13 @@ class UserAPI(MethodView):
         email = json['email']
         password = json['password']
         dt = datetime.now()
-        return jsonify(json), 201
         cur = conn.cursor()
         cur.execute("INSERT INTO users (first_name, last_name, email, password, created, last_modified) VALUES (%s, %s, %s, %s, %s, %s);", (first_name, last_name, email, password, dt, dt))
         conn.commit()
         cur.close()
+        response = make_response()
+        response.status = 201
+        return response
 
 @app.route("/get_task", methods=['GET'])
 def get_test():
