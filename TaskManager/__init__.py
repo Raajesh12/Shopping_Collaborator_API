@@ -14,6 +14,17 @@ def home():
     return jsonify({'home': 'This is the homepage'}), 200
 
 class UserAPI(MethodView):
+    def get(self, uid):
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE uid = %s;", (uid,))
+        row = cur.fetchone()
+        data = {
+            'first_name': row[1],
+            'last_name': row[2],
+            'email': row[3]
+        }
+        return jsonify(data), 200
+
     def post(self):
         """
         Example JSON for this request
@@ -37,16 +48,50 @@ class UserAPI(MethodView):
         response = flask.Response(status=201)
         return response
 
-    def get(self, uid):
-    	cur = conn.cursor()
-    	cur.execute("SELECT * FROM users WHERE uid = %s;", (uid,))
-    	row = cur.fetchone()
-    	data = {
-    		'first_name': row[1],
-    		'last_name': row[2],
-    		'email': row[3]
-    	}
-    	return jsonify(data), 200
+    def put(self, uid):
+        """
+        Example JSON (you need at least one of the keys)
+        {
+            (optional) 'first_name':<first name>,
+            (optional) 'last_name':<last name>,
+            (optional) 'email':<email>,
+            (optional) 'password':<password>
+        }
+        """
+        json = request.get_json()
+        
+        values_to_update = {}
+        first_name = json.get('first_name')
+        if first_name not None:
+            values_to_update['first_name'] = first_name
+
+        last_name = json.get('last_name')
+        if last_name not None:
+            values_to_update['last_name'] = last_name
+
+        email = json.get('email')
+        if email not None:
+            values_to_update['email'] = email
+
+        password = json.get('password')
+        if password not None:
+            values_to_update['password'] = password
+
+        cur = conn.cursor()
+        sql = 'UPDATE users SET '
+        for key in values_to_update:
+            update_str = key + ' = ' + '\'' + values_to_update[key] + '\'' + ', '
+            sql += update_str
+
+        substring_index = len(sql) - 2
+        sql = sql[0:substring_index]
+        sql += ' WHERE uid = ' + str(uid) + ';'
+        cur.execute(sql)
+        conn.commit()
+        cur.close()
+
+        response = flask.Response(status=200)
+        return response
 
 @app.route("/get_task", methods=['GET'])
 def get_test():
@@ -65,7 +110,7 @@ def get_test():
 
 user_view = UserAPI.as_view('user_api')
 app.add_url_rule('/users/', view_func=user_view, methods=['POST',])
-app.add_url_rule('/users/<int:uid>', view_func=user_view, methods=['GET',])
+app.add_url_rule('/users/<int:uid>', view_func=user_view, methods=['GET','PUT'])
 
 if __name__ == "__main__":
     app.run()
