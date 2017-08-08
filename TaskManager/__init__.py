@@ -39,14 +39,14 @@ class UserAPI(MethodView):
 
     def get(self, uid):
     	cur = conn.cursor()
-    	cur.execute("SELECT FROM users WHERE uid = %s;", uid)
+    	cur.execute("SELECT * FROM users WHERE uid = %s;", (uid,))
     	row = cur.fetchone()
     	data = {
     		'first_name': row[1],
     		'last_name': row[2],
     		'email': row[3]
     	}
-    	return jsonify(data), 201
+    	return jsonify(data), 200
 
 @app.route("/get_task", methods=['GET'])
 def get_test():
