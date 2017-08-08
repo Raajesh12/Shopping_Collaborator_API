@@ -37,6 +37,17 @@ class UserAPI(MethodView):
         response = flask.Response(status=201)
         return response
 
+    def get(self, uid):
+    	cur = conn.cursor()
+    	cur.execute("SELECT FROM users WHERE uid = %s;", uid)
+    	row = cur.fetchone()
+    	data = {
+    		'first_name': row[1],
+    		'last_name': row[2],
+    		'email': row[3]
+    	}
+    	return jsonify(data), 201
+
 @app.route("/get_task", methods=['GET'])
 def get_test():
     conn = psycopg2.connect(dbname="ourbase", user="www-data")
@@ -54,6 +65,7 @@ def get_test():
 
 user_view = UserAPI.as_view('user_api')
 app.add_url_rule('/users/', view_func=user_view, methods=['POST',])
+app.add_url_rule('/users/<int:uid>', view_func=user_view, methods=['GET',])
 
 if __name__ == "__main__":
     app.run()
