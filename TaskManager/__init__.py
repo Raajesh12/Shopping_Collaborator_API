@@ -1,3 +1,4 @@
+import flask
 from flask import Flask, jsonify, request
 from flask.views import MethodView
 import psycopg2
@@ -33,7 +34,8 @@ class UserAPI(MethodView):
         cur.execute("INSERT INTO users (first_name, last_name, email, password, created, last_modified) VALUES (%s, %s, %s, %s, %s, %s);", (first_name, last_name, email, password, dt, dt))
         conn.commit()
         cur.close()
-        return 201,
+        response = flask.Response(status=201)
+        return response
 
 @app.route("/get_task", methods=['GET'])
 def get_test():
