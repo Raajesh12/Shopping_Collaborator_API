@@ -30,10 +30,10 @@ class UserAPI(MethodView):
         password = json['password']
         dt = datetime.now()
         return jsonify(json), 201
-        #cur = conn.cursor()
-        #cur.execute("INSERT INTO users (first_name, last_name, email, password, created, last_modified) VALUES(%s, %s, %s, %s, %s, %s);", (first_name, last_name, email, password, dt, dt))
-        #cur.commit()
-        #cur.close()
+        cur = conn.cursor()
+        cur.execute("INSERT INTO users (first_name, last_name, email, password, created, last_modified) VALUES (%s, %s, %s, %s, %s, %s);", (first_name, last_name, email, password, dt, dt))
+        conn.commit()
+        cur.close()
 
 @app.route("/get_task", methods=['GET'])
 def get_test():
