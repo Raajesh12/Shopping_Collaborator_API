@@ -33,7 +33,7 @@ class UserAPI(MethodView):
         cur.execute("INSERT INTO users (first_name, last_name, email, password, created, last_modified) VALUES (%s, %s, %s, %s, %s, %s);", (first_name, last_name, email, password, dt, dt))
         conn.commit()
         cur.close()
-        return 201
+        return ( ,201)
 
 @app.route("/get_task", methods=['GET'])
 def get_test():
