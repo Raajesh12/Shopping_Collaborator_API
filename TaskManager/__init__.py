@@ -111,13 +111,13 @@ class UserAPI(MethodView):
 class GroupAPI(MethodView):
     def get(self):
         uid = request.args.get("uid")
-        # cur = conn.cursor()
-        # cur.execute("SELECT (group_user_match.gid, groups.group_name) FROM group_user_match INNER JOIN groups ON group_user_match.gid = groups.gid WHERE group_user_match.uid=%s", (uid,))
-        # data = {'groups' : []}
-        # for row in cur:
-            # row_tuple = make_tuple(row[0])
-            # row_data = {'gid':row_tuple[0], 'group_name':row_tuple[1]}
-            # data['groups'].append(row_data)
+        cur = conn.cursor()
+        cur.execute("SELECT (group_user_match.gid, groups.group_name) FROM group_user_match INNER JOIN groups ON group_user_match.gid = groups.gid WHERE group_user_match.uid=%s", (uid,))
+        data = {'groups' : []}
+        for row in cur:
+            row_tuple = make_tuple(row[0])
+            row_data = {'gid':row_tuple[0], 'group_name':row_tuple[1]}
+            data['groups'].append(row_data)
 
         return jsonify({'uid arg':uid}), 200
 
