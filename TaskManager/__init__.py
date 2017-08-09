@@ -59,7 +59,7 @@ class UserAPI(MethodView):
         }
         """
         json = request.get_json()
-        
+
         values_to_update = {}
         first_name = json.get('first_name')
         if first_name is not None:
@@ -93,6 +93,15 @@ class UserAPI(MethodView):
         response = flask.Response(status=200)
         return response
 
+    def delete(self, uid):
+        cur = conn.cursor()
+        cur.execute('DELETE FROM users WHERE uid = %s', (uid,))
+        conn.commit()
+        conn.close()
+
+        response = flask.Response(status=204)
+        return response
+
 @app.route("/get_task", methods=['GET'])
 def get_test():
     conn = psycopg2.connect(dbname="ourbase", user="www-data")
@@ -110,7 +119,7 @@ def get_test():
 
 user_view = UserAPI.as_view('user_api')
 app.add_url_rule('/users/', view_func=user_view, methods=['POST',])
-app.add_url_rule('/users/<int:uid>', view_func=user_view, methods=['GET','PUT'])
+app.add_url_rule('/users/<int:uid>', view_func=user_view, methods=['GET','PUT', 'DELETE'])
 
 if __name__ == "__main__":
     app.run()
