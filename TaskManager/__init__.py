@@ -107,24 +107,33 @@ class UserAPI(MethodView):
         response = flask.Response(status=204)
         return response
 
-@app.route("/get_task", methods=['GET'])
-def get_test():
-    conn = psycopg2.connect(dbname="ourbase", user="www-data")
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM test;")
-    row = cur.fetchone()
-    data = {
-        'id': row[0],
-        'num': row[1],
-        'data': row[2]
-    }
-    cur.close()
-    conn.close()
-    return jsonify({'data': data}), 200
+class GroupAPI(MethodView):
+    def post(self):
+        """
+        {
+            "uid": <uid>
+            "group_name": <group_name>
+        }
+        
+        """
+        cur = conn.cur()
+        json = request.get_json()
+        group_name = json["group_name"]
+        uid = json["uid"]
+        date = datetime.now()
+        cur.execute("INSERT INTO groups (group_name, created, last_modified) VALUES (%s, %s, %s) RETURNING gid;", (group_name, date, date))
+        gid = cur.fetchone()[0]
+        cur.execute("INSERT INTO group_user_match (gid, uid, created, last_modified) VALUES (%s, %s, %s, %s);", (gid, uid, date, date))
+        conn.commit()
+        cur.close()
+        return jsonify({"gid": gid}), 201
 
 user_view = UserAPI.as_view('user_api')
 app.add_url_rule('/users/', view_func=user_view, methods=['POST',])
 app.add_url_rule('/users/<int:uid>', view_func=user_view, methods=['GET','PUT', 'DELETE'])
+
+group_view = GroupAPI.as_view('group_api')
+app.add_url_rule('/groups/', view_func=group_view, metheds=['POST',])
 
 if __name__ == "__main__":
     app.run()
