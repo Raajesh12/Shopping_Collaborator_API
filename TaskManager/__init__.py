@@ -80,6 +80,8 @@ class UserAPI(MethodView):
         if password is not None:
             values_to_update['password'] = password
 
+        values_to_update['last_modified'] = str(datetime.now())
+
         cur = conn.cursor()
         sql = 'UPDATE users SET '
         for key in values_to_update:
