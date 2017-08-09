@@ -42,11 +42,14 @@ class UserAPI(MethodView):
         password = json['password']
         dt = datetime.now()
         cur = conn.cursor()
-        cur.execute("INSERT INTO users (first_name, last_name, email, password, created, last_modified) VALUES (%s, %s, %s, %s, %s, %s);", (first_name, last_name, email, password, dt, dt))
+        cur.execute("INSERT INTO users (first_name, last_name, email, password, created, last_modified) VALUES (%s, %s, %s, %s, %s, %s) RETURNING uid;", (first_name, last_name, email, password, dt, dt))
+        uid = cur.fetchone()
+        data = {
+            'uid': data[0]
+        }
         conn.commit()
         cur.close()
-        response = flask.Response(status=201)
-        return response
+        return jsonify(data), 201
 
     def put(self, uid):
         """
