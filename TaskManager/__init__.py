@@ -90,8 +90,8 @@ class UserAPI(MethodView):
         conn.commit()
         cur.close()
 
-response = flask.Response(status=200)
-return response
+        response = flask.Response(status=200)
+        return response
 
 @app.route("/get_task", methods=['GET'])
 def get_test():
