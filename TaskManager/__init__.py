@@ -45,7 +45,7 @@ class UserAPI(MethodView):
         cur.execute("INSERT INTO users (first_name, last_name, email, password, created, last_modified) VALUES (%s, %s, %s, %s, %s, %s) RETURNING uid;", (first_name, last_name, email, password, dt, dt))
         uid = cur.fetchone()
         data = {
-            'uid': data[0]
+            'uid': uid[0]
         }
         conn.commit()
         cur.close()
