@@ -93,14 +93,14 @@ class UserAPI(MethodView):
         conn.commit()
         cur.close()
 
-        response = flask.Response(status=200)
+        response = flask.Response(status=204)
         return response
 
     def delete(self, uid):
         cur = conn.cursor()
         cur.execute('DELETE FROM users WHERE uid = %s', (uid,))
         conn.commit()
-        conn.close()
+        cur.close()
 
         response = flask.Response(status=204)
         return response
