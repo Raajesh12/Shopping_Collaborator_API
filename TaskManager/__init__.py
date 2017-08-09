@@ -1,4 +1,5 @@
 import flask
+from ast import literal_eval as make_tuple
 from flask import Flask, jsonify, request
 from flask.views import MethodView
 import psycopg2
@@ -111,14 +112,10 @@ class GroupAPI(MethodView):
     def get(self, uid):
         cur = conn.cursor()
         cur.execute("SELECT (group_user_match.gid, groups.group_name) FROM group_user_match INNER JOIN groups ON group_user_match.gid = groups.gid WHERE group_user_match.uid=%s", (uid,))
-        data = {
-            'groups' : []
-        }
+        data = {'groups' : []}
         for row in cur:
-            row_data = {
-                'gid':row[0],
-                'group_name':row[1]
-            }
+            row_tuple = make_tuple(row[0])
+            row_data = {'gid':row_tuple[0], 'group_name':row_tuple[1]}
             data['groups'].append(row_data)
 
         return jsonify(data), 200
