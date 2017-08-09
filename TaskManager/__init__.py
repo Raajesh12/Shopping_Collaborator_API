@@ -133,7 +133,7 @@ app.add_url_rule('/users/', view_func=user_view, methods=['POST',])
 app.add_url_rule('/users/<int:uid>', view_func=user_view, methods=['GET','PUT', 'DELETE'])
 
 group_view = GroupAPI.as_view('group_api')
-app.add_url_rule('/groups/', view_func=group_view, metheds=['POST',])
+app.add_url_rule('/groups/', view_func=group_view, methods=['POST',])
 
 if __name__ == "__main__":
     app.run()
