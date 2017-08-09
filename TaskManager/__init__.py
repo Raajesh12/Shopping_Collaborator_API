@@ -140,6 +140,21 @@ class GroupAPI(MethodView):
         conn.commit()
         cur.close()
         return jsonify({"gid": gid}), 201
+    
+    def put(self, gid):
+        '''
+        {
+            "group_name":<group_name>
+        }
+        '''
+        cur = conn.cursor()
+        json = request.get_json()
+        group_name = json["group_name"]
+        cur.execute("UPDATE groups SET group_name = %s WHERE gid = %s;", (group_name, gid))
+        conn.commit()
+        cur.close()
+        response = flask.Response(status=204)
+        return response
 
     def delete(self, gid):
         cur = conn.cursor()
