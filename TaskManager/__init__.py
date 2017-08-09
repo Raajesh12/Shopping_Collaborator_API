@@ -119,7 +119,7 @@ class GroupAPI(MethodView):
             row_data = {'gid':row_tuple[0], 'group_name':row_tuple[1]}
             data['groups'].append(row_data)
 
-        return jsonify({'uid arg':uid}), 200
+        return jsonify(data), 200
 
     def post(self):
         """
