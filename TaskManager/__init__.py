@@ -4,7 +4,7 @@ from flask.views import MethodView
 import psycopg2
 import traceback
 from datetime import datetime
-#hello
+
 app = Flask(__name__)
 
 conn = psycopg2.connect(dbname="taskbase", user="www-data")
