@@ -62,19 +62,19 @@ class UserAPI(MethodView):
         
         values_to_update = {}
         first_name = json.get('first_name')
-        if first_name not None:
+        if first_name is not None:
             values_to_update['first_name'] = first_name
 
         last_name = json.get('last_name')
-        if last_name not None:
+        if last_name is not None:
             values_to_update['last_name'] = last_name
 
         email = json.get('email')
-        if email not None:
+        if email is not None:
             values_to_update['email'] = email
 
         password = json.get('password')
-        if password not None:
+        if password is not None:
             values_to_update['password'] = password
 
         cur = conn.cursor()
@@ -85,13 +85,13 @@ class UserAPI(MethodView):
 
         substring_index = len(sql) - 2
         sql = sql[0:substring_index]
-        sql += ' WHERE uid = ' + str(uid) + ';'
+        sql += (' WHERE uid = ' + str(uid) + ';')
         cur.execute(sql)
         conn.commit()
         cur.close()
 
-        response = flask.Response(status=200)
-        return response
+response = flask.Response(status=200)
+return response
 
 @app.route("/get_task", methods=['GET'])
 def get_test():
