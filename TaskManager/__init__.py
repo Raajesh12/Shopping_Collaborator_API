@@ -128,13 +128,22 @@ class GroupAPI(MethodView):
         cur.close()
         return jsonify({"gid": gid}), 201
 
+    def delete(self, gid):
+        cur = conn.cursor()
+        cur.execute("DELETE FROM groups WHERE gid = %s;", (gid,))
+        cur.execute("DELETE FROM group_user_match WHERE gid = %s;", (gid,))
+        conn.commit()
+        cur.close()
+        response = flask.Response(status=204)
+        return response
+
 user_view = UserAPI.as_view('user_api')
 app.add_url_rule('/users/', view_func=user_view, methods=['POST',])
 app.add_url_rule('/users/<int:uid>', view_func=user_view, methods=['GET','PUT', 'DELETE'])
 
 group_view = GroupAPI.as_view('group_api')
 app.add_url_rule('/groups/', view_func=group_view, methods=['POST',])
+app.add_url_rule('/groups/<int:gid>', view_func=group_view, methods=['GET','PUT', 'DELETE'])
 
 if __name__ == "__main__":
     app.run()
-
