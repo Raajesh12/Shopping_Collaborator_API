@@ -116,7 +116,7 @@ class GroupAPI(MethodView):
         }
         
         """
-        cur = conn.cur()
+        cur = conn.cursor()
         json = request.get_json()
         group_name = json["group_name"]
         uid = json["uid"]
