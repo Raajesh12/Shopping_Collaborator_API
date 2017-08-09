@@ -108,6 +108,21 @@ class UserAPI(MethodView):
         return response
 
 class GroupAPI(MethodView):
+    def get(self, uid):
+        cur = conn.cursor()
+        cur.execute("SELECT (group_user_match.gid, groups.group_name) FROM group_user_match INNER JOIN groups ON group_user_match.gid = groups.gid WHERE group_user_match.uid=%s", (uid,))
+        data = {
+            'groups' : []
+        }
+        for row in cur:
+            row_data = {
+                'gid':row[0],
+                'group_name':row[1]
+            }
+            data['groups'].append(row_data)
+
+        return jsonify(data), 200
+
     def post(self):
         """
         {
@@ -142,8 +157,9 @@ app.add_url_rule('/users/', view_func=user_view, methods=['POST',])
 app.add_url_rule('/users/<int:uid>', view_func=user_view, methods=['GET','PUT', 'DELETE'])
 
 group_view = GroupAPI.as_view('group_api')
+app.add_url_rule('/groups/<int:uid>', view_func=group_view, methods=['GET'])
 app.add_url_rule('/groups/', view_func=group_view, methods=['POST',])
-app.add_url_rule('/groups/<int:gid>', view_func=group_view, methods=['GET','PUT', 'DELETE'])
+app.add_url_rule('/groups/<int:gid>', view_func=group_view, methods=['PUT', 'DELETE'])
 
 if __name__ == "__main__":
     app.run()
