@@ -218,7 +218,7 @@ app.add_url_rule('/groups/<int:gid>', view_func=group_view, methods=['PUT', 'DEL
 
 task_view = TaskAPI.as_view('task_api')
 app.add_url_rule('/tasks', view_func=task_view, methods=['POST', 'GET'])
-app.add_url_rule('/tasks/<int:task_id>', view_func=group_view, methods=['DELETE',])
+app.add_url_rule('/tasks/<int:task_id>', view_func=task_view, methods=['DELETE',])
 
 if __name__ == "__main__":
     app.run()
