@@ -167,6 +167,18 @@ class GroupAPI(MethodView):
         return response
     
 class TaskAPI(MethodView):
+    def get(self):
+        gid = request.args.get("gid")
+        cur = conn.cursor()
+        cur.execute("SELECT (users.first_name, users.last_name, tasks.task_desription) FROM tasks INNER JOIN users ON users.uid = tasks.uid WHERE tasks.gid=%s;", (gid,))
+        data = {'tasks' : []}
+        for row in cur:
+            row_tuple = make_tuple(row[0])
+            row_data = {'first_name':row_tuple[0], 'last_name':row_tuple[1], 'task_description':row_tuple[2]}
+            data['tasks'].append(row_data)
+
+        return jsonify(data), 200
+
     def post(self):
         """
         {
@@ -197,7 +209,7 @@ app.add_url_rule('/groups/', view_func=group_view, methods=['POST',])
 app.add_url_rule('/groups/<int:gid>', view_func=group_view, methods=['PUT', 'DELETE'])
 
 task_view = TaskAPI.as_view('task_api')
-app.add_url_rule('/tasks/', view_func=task_view, methods=['POST',])
+app.add_url_rule('/tasks', view_func=task_view, methods=['POST', 'GET'])
 
 if __name__ == "__main__":
     app.run()
