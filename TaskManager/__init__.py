@@ -1,4 +1,5 @@
 import flask
+import base64
 from ast import literal_eval as make_tuple
 from flask import Flask, jsonify, request
 from flask.views import MethodView
@@ -51,10 +52,11 @@ class UserAPI(MethodView):
         last_name = json['last_name']
         email = json['email']
         password = json['password']
+        encrypted_password = base64.b64encode(password)
         dt = datetime.now()
         cur = conn.cursor()
         try:
-            cur.execute("INSERT INTO users (first_name, last_name, email, password, created, last_modified) VALUES (%s, %s, %s, %s, %s, %s) RETURNING uid;", (first_name, last_name, email, password, dt, dt))
+            cur.execute("INSERT INTO users (first_name, last_name, email, password, created, last_modified) VALUES (%s, %s, %s, %s, %s, %s) RETURNING uid;", (first_name, last_name, email, encrypted_password, dt, dt))
         except psycopg2.IntegrityError:
             data = {'error': 'email already used'}
             return jsonify(data), 400
@@ -98,7 +100,8 @@ class UserAPI(MethodView):
 
         password = json.get('password')
         if password is not None:
-            values_to_update['password'] = password
+            encrypted_password = base64.b64encode(password)
+            values_to_update['password'] = encrypted_password
 
         values_to_update['last_modified'] = str(datetime.now())
 
@@ -350,8 +353,9 @@ def validate_user():
     json = request.get_json()
     email = json['email']
     password = json['password']
+    encrypted_password = base64.b64encode(password)
     cur = conn.cursor()
-    cur.execute("SELECT * FROM users WHERE email = %s AND password = %s;", (email, password))
+    cur.execute("SELECT * FROM users WHERE email = %s AND password = %s;", (email, encrypted_password))
     row = cur.fetchone()
     if row is None:
         response = flask.Response(status=401)
