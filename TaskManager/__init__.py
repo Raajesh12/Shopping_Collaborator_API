@@ -165,7 +165,7 @@ class GroupAPI(MethodView):
         response = flask.Response(status=204)
         return response
     
-class TaskApi(MethodView):
+class TaskAPI(MethodView):
     def post(self):
         """
         {
