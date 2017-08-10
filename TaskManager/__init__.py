@@ -41,7 +41,7 @@ class UserAPI(MethodView):
             'password':<email>
         }
         """
-        auth = request.headers.get('Authorization')
+        auth = str(request.headers.get('Authorization'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
