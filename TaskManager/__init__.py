@@ -41,9 +41,10 @@ class UserAPI(MethodView):
             'password':<email>
         }
         """
-        auth = str(request.headers.get('Authorization'))
+        auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
-            return jsonify({'data':str(request.headers)}), 403
+            response = flask.Response(status=403)
+            return response
 
         json = request.get_json()
         first_name = json['first_name']
