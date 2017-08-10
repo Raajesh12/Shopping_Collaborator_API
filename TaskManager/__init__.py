@@ -24,6 +24,7 @@ class UserAPI(MethodView):
             'last_name': row[2],
             'email': row[3]
         }
+        cur.close()
         return jsonify(data), 200
 
     def post(self):
@@ -118,7 +119,7 @@ class GroupAPI(MethodView):
             row_tuple = make_tuple(row[0])
             row_data = {'gid':row_tuple[0], 'group_name':row_tuple[1]}
             data['groups'].append(row_data)
-
+        cur.close()
         return jsonify(data), 200
 
     def post(self):
@@ -176,7 +177,7 @@ class TaskAPI(MethodView):
     #         row_tuple = make_tuple(row[0])
     #         row_data = {'first_name':row_tuple[0], 'last_name':row_tuple[1], 'task_description':row_tuple[2]}
     #         data['tasks'].append(row_data)
-
+    #     cur.close()
     #     return jsonify(data), 200
 
     def post(self):
