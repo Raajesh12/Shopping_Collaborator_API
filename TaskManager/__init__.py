@@ -219,9 +219,9 @@ class TaskAPI(MethodView):
         response = flask.Response(status=204)
         return response
 
-    def delete(self, taskid):
+    def delete(self, task_id):
         cur = conn.cursor()
-        cur.execute("DELETE FROM tasks WHERE id=%s", (taskid,))
+        cur.execute("DELETE FROM tasks WHERE id=%s", (task_id,))
         conn.commit()
         cur.close()
         response = flask.Response(status=204)
@@ -261,7 +261,7 @@ app.add_url_rule('/groups/<int:gid>', view_func=group_view, methods=['PUT', 'DEL
 
 task_view = TaskAPI.as_view('task_api')
 app.add_url_rule('/tasks', view_func=task_view, methods=['POST', 'GET'])
-app.add_url_rule('/tasks/<int:taskid>', view_func=task_view, methods=['PUT', 'DELETE'])
+app.add_url_rule('/tasks/<int:task_id>', view_func=task_view, methods=['PUT', 'DELETE'])
 
 if __name__ == "__main__":
     app.run()
