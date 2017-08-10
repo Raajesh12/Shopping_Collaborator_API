@@ -199,14 +199,6 @@ class TaskAPI(MethodView):
         conn.commit()
         cur.close()
         return jsonify({"id": task_id}), 201
-    
-    def delete(self, taskid)
-        cur = conn.cursor()
-        cur.execute("DELETE FROM tasks WHERE id = %s;", (task_id,))
-        conn.commit()
-        cur.close()
-        response = flask.Response(status=204)
-        return response
 
 user_view = UserAPI.as_view('user_api')
 app.add_url_rule('/users/', view_func=user_view, methods=['POST',])
@@ -219,7 +211,6 @@ app.add_url_rule('/groups/<int:gid>', view_func=group_view, methods=['PUT', 'DEL
 
 task_view = TaskAPI.as_view('task_api')
 app.add_url_rule('/tasks', view_func=task_view, methods=['POST', 'GET'])
-app.add_url_rule('/tasks/<int:taskid>', view_func=task_view, methods=['DELETE',])
 
 if __name__ == "__main__":
     app.run()
