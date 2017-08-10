@@ -248,6 +248,7 @@ class GroupUserAPI(MethodView):
         conn.commit()
         cur.close()
         response = flask.Response(status=201)
+        return response
 
     def delete(self):
         """
