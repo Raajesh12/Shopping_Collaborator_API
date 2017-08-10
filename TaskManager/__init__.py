@@ -164,6 +164,27 @@ class GroupAPI(MethodView):
         cur.close()
         response = flask.Response(status=204)
         return response
+    
+class TaskApi(MethodView):
+    def post(self):
+        """
+        {
+         "uid":<uid>
+         "gid":<gid>
+         "task_description":<task_description>
+        }
+        """
+        cur = conn.cursor()
+        json = request.get_json()
+        uid = json["uid"]
+        gid = json["gid"]
+        task_description = json["task_description"]
+        date = datetime.now()
+        cur.execute("INSERT INTO tasks (gid, uid, task_description, created, last_modified) VALUES (%s, %s, %s, %s, %S) RETURNING id;", (gid, uid, task_description, date, date))
+        id = cur.fetchone()[0]
+        con.commit()
+        cur.close()
+        return jsonify({"id": id}), 201
 
 user_view = UserAPI.as_view('user_api')
 app.add_url_rule('/users/', view_func=user_view, methods=['POST',])
@@ -173,6 +194,9 @@ group_view = GroupAPI.as_view('group_api')
 app.add_url_rule('/groups', view_func=group_view, methods=['GET'])
 app.add_url_rule('/groups/', view_func=group_view, methods=['POST',])
 app.add_url_rule('/groups/<int:gid>', view_func=group_view, methods=['PUT', 'DELETE'])
+
+task_view = TaskAPI.as_view('task_api')
+app.add_url_rule('/tasks/', view_func=task_view, methods=['POST',])
 
 if __name__ == "__main__":
     app.run()
