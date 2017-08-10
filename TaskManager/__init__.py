@@ -171,7 +171,7 @@ class TaskAPI(MethodView):
     def get(self):
         gid = request.args.get("gid")
         cur = conn.cursor()
-        cur.execute("SELECT (users.first_name, users.last_name, tasks.task_desription) FROM tasks INNER JOIN users ON users.uid = tasks.uid WHERE tasks.gid=%s;", (gid,))
+        cur.execute("SELECT (users.first_name, users.last_name, tasks.task_description) FROM tasks INNER JOIN users ON users.uid = tasks.uid WHERE tasks.gid=%s;", (gid,))
         data = {'tasks' : []}
         for row in cur:
             row_tuple = make_tuple(row[0])
