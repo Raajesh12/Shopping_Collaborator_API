@@ -15,6 +15,11 @@ def home():
 
 class UserAPI(MethodView):
     def get(self, uid):
+        auth = request.headers.get('Authorization')
+        if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+            response = flask.Response(status=403)
+            return response
+
         cur = conn.cursor()
         cur.execute("SELECT * FROM users WHERE uid = %s;", (uid,))
         row = cur.fetchone()
@@ -36,6 +41,11 @@ class UserAPI(MethodView):
             'password':<email>
         }
         """
+        auth = request.headers.get('Authorization')
+        if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+            response = flask.Response(status=403)
+            return response
+
         json = request.get_json()
         first_name = json['first_name']
         last_name = json['last_name']
@@ -66,6 +76,11 @@ class UserAPI(MethodView):
             (optional) 'password':<password>
         }
         """
+        auth = request.headers.get('Authorization')
+        if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+            response = flask.Response(status=403)
+            return response
+
         json = request.get_json()
 
         values_to_update = {}
@@ -104,6 +119,11 @@ class UserAPI(MethodView):
         return response
 
     def delete(self, uid):
+        auth = request.headers.get('Authorization')
+        if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+            response = flask.Response(status=403)
+            return response
+
         cur = conn.cursor()
         cur.execute('DELETE FROM users WHERE uid = %s', (uid,))
         conn.commit()
@@ -114,6 +134,11 @@ class UserAPI(MethodView):
 
 class GroupAPI(MethodView):
     def get(self):
+        auth = request.headers.get('Authorization')
+        if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+            response = flask.Response(status=403)
+            return response
+
         uid = request.args.get("uid")
         cur = conn.cursor()
         cur.execute("SELECT (group_user_match.gid, groups.group_name) FROM group_user_match INNER JOIN groups ON group_user_match.gid = groups.gid WHERE group_user_match.uid=%s", (uid,))
@@ -133,6 +158,11 @@ class GroupAPI(MethodView):
         }
         
         """
+        auth = request.headers.get('Authorization')
+        if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+            response = flask.Response(status=403)
+            return response
+
         cur = conn.cursor()
         json = request.get_json()
         group_name = json["group_name"]
@@ -151,6 +181,11 @@ class GroupAPI(MethodView):
             "group_name":<group_name>
         }
         '''
+        auth = request.headers.get('Authorization')
+        if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+            response = flask.Response(status=403)
+            return response
+
         cur = conn.cursor()
         json = request.get_json()
         group_name = json["group_name"]
@@ -162,6 +197,11 @@ class GroupAPI(MethodView):
         return response
 
     def delete(self, gid):
+        auth = request.headers.get('Authorization')
+        if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+            response = flask.Response(status=403)
+            return response
+
         cur = conn.cursor()
         cur.execute("DELETE FROM groups WHERE gid = %s;", (gid,))
         cur.execute("DELETE FROM group_user_match WHERE gid = %s;", (gid,))
@@ -172,6 +212,11 @@ class GroupAPI(MethodView):
     
 class TaskAPI(MethodView):
     def get(self):
+        auth = request.headers.get('Authorization')
+        if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+            response = flask.Response(status=403)
+            return response
+
         gid = request.args.get("gid")
         cur = conn.cursor()
         cur.execute("SELECT (users.first_name, users.last_name, tasks.task_description) FROM tasks INNER JOIN users ON users.uid = tasks.uid WHERE tasks.gid=%s;", (gid,))
@@ -195,6 +240,11 @@ class TaskAPI(MethodView):
          "task_description":<task_description>
         }
         """
+        auth = request.headers.get('Authorization')
+        if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+            response = flask.Response(status=403)
+            return response
+
         cur = conn.cursor()
         json = request.get_json()
         uid = json["uid"]
@@ -213,6 +263,11 @@ class TaskAPI(MethodView):
         "task_description": <task_description>
         }
         """
+        auth = request.headers.get('Authorization')
+        if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+            response = flask.Response(status=403)
+            return response
+
         cur = conn.cursor()
         json = request.get_json()
         task_description = json["task_description"]
@@ -224,6 +279,11 @@ class TaskAPI(MethodView):
         return response
 
     def delete(self, task_id):
+        auth = request.headers.get('Authorization')
+        if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+            response = flask.Response(status=403)
+            return response
+
         cur = conn.cursor()
         cur.execute("DELETE FROM tasks WHERE id=%s", (task_id,))
         conn.commit()
@@ -239,6 +299,11 @@ class GroupUserAPI(MethodView):
         "user_email":<user_email>
         }
         """
+        auth = request.headers.get('Authorization')
+        if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+            response = flask.Response(status=403)
+            return response
+
         cur = conn.cursor()
         json = request.get_json()
         gid = json["gid"]
@@ -255,6 +320,11 @@ class GroupUserAPI(MethodView):
         return response
 
     def delete(self):
+        auth = request.headers.get('Authorization')
+        if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+            response = flask.Response(status=403)
+            return response
+
         cur = conn.cursor()
         gid = request.args.get("gid")
         uid = request.args.get("uid")
@@ -272,6 +342,11 @@ def validate_user():
         'password':<password>
     }
     """
+    auth = request.headers.get('Authorization')
+    if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+        response = flask.Response(status=403)
+        return response
+
     json = request.get_json()
     email = json['email']
     password = json['password']
