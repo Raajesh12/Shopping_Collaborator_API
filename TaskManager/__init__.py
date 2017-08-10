@@ -201,7 +201,7 @@ class TaskAPI(MethodView):
     
     def delete(self, task_id)
         cur = conn.cursor()
-        cur.execute("DELETE FROM tasks WHERE id = %s;", (task_id))
+        cur.execute("DELETE FROM tasks WHERE id = %s;", (task_id,))
         conn.commit()
         cur.close()
         response = flask.Response(status=204)
