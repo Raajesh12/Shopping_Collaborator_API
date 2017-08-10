@@ -240,7 +240,7 @@ class GroupUserAPI(MethodView):
         gid = json["gid"]
         user_email = json["user_email"]
         dt = datetime.now()
-        cur.execute("SELECT uid FROM users WHERE email = %s;", (user_email,))
+        cur.execute("SELECT (uid) FROM users WHERE email = %s;", (user_email,))
         uid = cur.fetchone()[0]
         if(uid is None):
             return jsonify({"error": "user not found"}), 400
