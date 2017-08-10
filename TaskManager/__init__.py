@@ -251,14 +251,9 @@ class GroupUserAPI(MethodView):
         return response
 
     def delete(self):
-        """
-        "gid":<gid>
-        "uid":<uid>
-        """
         cur = conn.cursor()
-        json = request.get_json()
-        gid = json["gid"]
-        uid = json["uid"]
+        gid = request.args.get("gid")
+        uid = request.args.get("uid")
         cur.execute("DELETE FROM group_user_match WHERE gid = %s AND uid = %s;", (gid, uid))
         conn.commit()
         cur.close()
