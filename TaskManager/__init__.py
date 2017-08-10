@@ -217,7 +217,7 @@ class TaskAPI(MethodView):
         cur.execute("UPDATE tasks SET task_description = %s, last_modified = %s WHERE id = %s;", (task_description, dt, task_id))
         conn.commit()
         cur.close()
-        response = flask.Response(status = 204)
+        response = flask.Response(status=204)
         return response
 
     def delete(self, taskid):
