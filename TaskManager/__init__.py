@@ -174,8 +174,12 @@ class TaskAPI(MethodView):
         cur.execute("SELECT (users.first_name, users.last_name, tasks.task_description) FROM tasks INNER JOIN users ON users.uid = tasks.uid WHERE tasks.gid=%s;", (gid,))
         data = {'tasks' : []}
         for row in cur:
-            row_tuple = make_tuple(row[0])
-            row_data = {'first_name':row_tuple[0], 'last_name':row_tuple[1], 'task_description':row_tuple[2]}
+            components = row[0].split(',')
+            for i in range(0, len(components)):
+                components[i] = components[i].replace('(', '')
+                components[i] = components[i].replace('\"', '')
+                components[i] = components[i].replace(')', '')
+            row_data = {'first_name':components[0], 'last_name':components[1], 'task_description':components[2]}
             data['tasks'].append(row_data)
         cur.close()
         return jsonify(data), 200
