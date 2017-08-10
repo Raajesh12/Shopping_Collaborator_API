@@ -15,7 +15,7 @@ def home():
 
 class UserAPI(MethodView):
     def get(self, uid):
-        auth = request.headers.get('Authorization')
+        auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
@@ -76,7 +76,7 @@ class UserAPI(MethodView):
             (optional) 'password':<password>
         }
         """
-        auth = request.headers.get('Authorization')
+        auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
@@ -119,7 +119,7 @@ class UserAPI(MethodView):
         return response
 
     def delete(self, uid):
-        auth = request.headers.get('Authorization')
+        auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
@@ -134,7 +134,7 @@ class UserAPI(MethodView):
 
 class GroupAPI(MethodView):
     def get(self):
-        auth = request.headers.get('Authorization')
+        auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
@@ -158,7 +158,7 @@ class GroupAPI(MethodView):
         }
         
         """
-        auth = request.headers.get('Authorization')
+        auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
@@ -181,7 +181,7 @@ class GroupAPI(MethodView):
             "group_name":<group_name>
         }
         '''
-        auth = request.headers.get('Authorization')
+        auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
@@ -197,7 +197,7 @@ class GroupAPI(MethodView):
         return response
 
     def delete(self, gid):
-        auth = request.headers.get('Authorization')
+        auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
@@ -212,7 +212,7 @@ class GroupAPI(MethodView):
     
 class TaskAPI(MethodView):
     def get(self):
-        auth = request.headers.get('Authorization')
+        auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
@@ -240,7 +240,7 @@ class TaskAPI(MethodView):
          "task_description":<task_description>
         }
         """
-        auth = request.headers.get('Authorization')
+        auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
@@ -263,7 +263,7 @@ class TaskAPI(MethodView):
         "task_description": <task_description>
         }
         """
-        auth = request.headers.get('Authorization')
+        auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
@@ -279,7 +279,7 @@ class TaskAPI(MethodView):
         return response
 
     def delete(self, task_id):
-        auth = request.headers.get('Authorization')
+        auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
@@ -299,7 +299,7 @@ class GroupUserAPI(MethodView):
         "user_email":<user_email>
         }
         """
-        auth = request.headers.get('Authorization')
+        auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
@@ -320,7 +320,7 @@ class GroupUserAPI(MethodView):
         return response
 
     def delete(self):
-        auth = request.headers.get('Authorization')
+        auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
@@ -342,7 +342,7 @@ def validate_user():
         'password':<password>
     }
     """
-    auth = request.headers.get('Authorization')
+    auth = str(request.headers.get('Token'))
     if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
         response = flask.Response(status=403)
         return response
