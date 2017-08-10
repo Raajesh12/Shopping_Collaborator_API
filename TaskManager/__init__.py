@@ -118,7 +118,7 @@ class GroupAPI(MethodView):
             row_tuple = make_tuple(row[0])
             row_data = {'gid':row_tuple[0], 'group_name':row_tuple[1]}
             data['groups'].append(row_data)
-        cur.close()
+
         return jsonify(data), 200
 
     def post(self):
@@ -176,7 +176,7 @@ class TaskAPI(MethodView):
             row_tuple = make_tuple(row[0])
             row_data = {'first_name':row_tuple[0], 'last_name':row_tuple[1], 'task_description':row_tuple[2]}
             data['tasks'].append(row_data)
-        cur.close()
+
         return jsonify(data), 200
 
     def post(self):
@@ -202,7 +202,7 @@ class TaskAPI(MethodView):
     def delete(self, task_id)
         cur = conn.cursor()
         cur.execute("DELETE FROM tasks WHERE id = %s;", (task_id))
-        cur.commit()
+        conn.commit()
         cur.close()
         response = flask.Response(status=204)
         return response
@@ -218,7 +218,7 @@ app.add_url_rule('/groups/<int:gid>', view_func=group_view, methods=['PUT', 'DEL
 
 task_view = TaskAPI.as_view('task_api')
 app.add_url_rule('/tasks', view_func=task_view, methods=['POST', 'GET'])
-app.add_url_rule('/tasks/<int:task_id>', view_func=group_view, methods=['DELETE',])
+app.add_url_rule('/tasks/<int:task_id>', view_func=task_view, methods=['DELETE',])
 
 if __name__ == "__main__":
     app.run()
