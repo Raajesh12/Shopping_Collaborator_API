@@ -229,40 +229,40 @@ class TaskAPI(MethodView):
     
 class GroupUserAPI(MethodView):
     def post(self):
-    """
-    {
-    "gid":<gid>
-    "user_email":<user_email>
-    }
-    """
-    cur = conn.cursor()
-    json = request.get_json()
-    gid = json["gid"]
-    user_email = json["user_email"]
-    dt = datetime.now()
-    cur.execute("SELECT uid FROM users WHERE email = %s;", (user_email,))
-    uid = cur.fetchone()[0]
-    if(uid is None)
-        return jsonify({"error": "user not found"}), 400
-    cur.execute("INSERT INTO group_user_match (gid, uid, created, last_modified) VALUES (%s, %s, %s, %s);", (gid, uid, dt, dt))
-    conn.commit()
-    cur.close()
-    response = flask.Response(status=201)
+        """
+        {
+        "gid":<gid>
+        "user_email":<user_email>
+        }
+        """
+        cur = conn.cursor()
+        json = request.get_json()
+        gid = json["gid"]
+        user_email = json["user_email"]
+        dt = datetime.now()
+        cur.execute("SELECT uid FROM users WHERE email = %s;", (user_email,))
+        uid = cur.fetchone()[0]
+        if(uid is None)
+            return jsonify({"error": "user not found"}), 400
+        cur.execute("INSERT INTO group_user_match (gid, uid, created, last_modified) VALUES (%s, %s, %s, %s);", (gid, uid, dt, dt))
+        conn.commit()
+        cur.close()
+        response = flask.Response(status=201)
 
     def delete(self):
-    """
-    "gid":<gid>
-    "uid":<uid>
-    """
-    cur = conn.cursor()
-    json = request.get_json()
-    gid = json["gid"]
-    uid = json["uid"]
-    cur.execute("DELETE FROM group_user_match WHERE gid = %s AND uid = %s;", (gid, uid))
-    conn.commit()
-    cur.close()
-    response = flask.Response(status=204)
-    return response
+        """
+        "gid":<gid>
+        "uid":<uid>
+        """
+        cur = conn.cursor()
+        json = request.get_json()
+        gid = json["gid"]
+        uid = json["uid"]
+        cur.execute("DELETE FROM group_user_match WHERE gid = %s AND uid = %s;", (gid, uid))
+        conn.commit()
+        cur.close()
+        response = flask.Response(status=204)
+        return response
 
 def validate_user():
     """
