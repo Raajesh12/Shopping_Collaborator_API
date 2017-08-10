@@ -10,7 +10,6 @@ app = Flask(__name__)
 
 conn = psycopg2.connect(dbname="taskbase", user="www-data")
 
-@app.route("/", methods=['GET'])
 def home():
     return jsonify({'home': 'This is the homepage'}), 200
 
@@ -227,6 +226,29 @@ class TaskAPI(MethodView):
         cur.close()
         response = flask.Response(status=204)
         return response
+
+def validate_user():
+    """
+    JSON format
+    {
+        'email':<email>
+        'password':<password>
+    }
+    """
+    json = request.get_json()
+    email = json['email']
+    password = json['password']
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE email = %s AND password = %s;", (email, password))
+    row = cur.fetchone()
+    if row is None:
+        response = flask.Response(status=401)
+        return response
+    response = flask.Response(status=200)
+    return response
+
+app.add_url_rule('/', 'home', home, methods=['GET'])
+app.add_url_rule('/validate_user', 'validate_user', validate_user, methods=['POST'])
 
 user_view = UserAPI.as_view('user_api')
 app.add_url_rule('/users/', view_func=user_view, methods=['POST',])
