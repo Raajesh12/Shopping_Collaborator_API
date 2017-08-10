@@ -43,7 +43,11 @@ class UserAPI(MethodView):
         password = json['password']
         dt = datetime.now()
         cur = conn.cursor()
-        cur.execute("INSERT INTO users (first_name, last_name, email, password, created, last_modified) VALUES (%s, %s, %s, %s, %s, %s) RETURNING uid;", (first_name, last_name, email, password, dt, dt))
+        try:
+            cur.execute("INSERT INTO users (first_name, last_name, email, password, created, last_modified) VALUES (%s, %s, %s, %s, %s, %s) RETURNING uid;", (first_name, last_name, email, password, dt, dt))
+        except psycopg2.IntegrityError:
+            data = {'error': 'email already used'}
+            return jsonify(data), 400
         uid = cur.fetchone()
         data = {
             'uid': uid[0]
