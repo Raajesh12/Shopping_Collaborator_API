@@ -226,6 +226,43 @@ class TaskAPI(MethodView):
         cur.close()
         response = flask.Response(status=204)
         return response
+    
+class GroupUserAPI(MethodView):
+    def post(self):
+    """
+    {
+    "gid":<gid>
+    "user_email":<user_email>
+    }
+    """
+    cur = conn.cursor()
+    json = request.get_json()
+    gid = json["gid"]
+    user_email = json["user_email"]
+    dt = datetime.now()
+    cur.execute("SELECT uid FROM users WHERE email = %s;", (user_email,))
+    uid = cur.fetchone()[0]
+    if(uid is None)
+        return jsonify({"error": "user not found"}), 400
+    cur.execute("INSERT INTO group_user_match (gid, uid, created, last_modified) VALUES (%s, %s, %s, %s);", (gid, uid, dt, dt))
+    conn.commit()
+    cur.close()
+    response = flask.Response(status=201)
+
+    def delete(self):
+    """
+    "gid":<gid>
+    "uid":<uid>
+    """
+    cur = conn.cursor()
+    json = request.get_json()
+    gid = json["gid"]
+    uid = json["uid"]
+    cur.execute("DELETE FROM group_user_match WHERE gid = %s AND uid = %s;", (gid, uid))
+    conn.commit()
+    cur.close()
+    response = flask.Response(status=204)
+    return response
 
 def validate_user():
     """
@@ -262,6 +299,9 @@ app.add_url_rule('/groups/<int:gid>', view_func=group_view, methods=['PUT', 'DEL
 task_view = TaskAPI.as_view('task_api')
 app.add_url_rule('/tasks', view_func=task_view, methods=['POST', 'GET'])
 app.add_url_rule('/tasks/<int:task_id>', view_func=task_view, methods=['PUT', 'DELETE'])
+
+group_user_view = GroupUserAPI.as_view('group_user_api')
+app.add_url_rule('/group_user', view_func=group_user_view, methods=['POST', 'DELETE'])
 
 if __name__ == "__main__":
     app.run()
