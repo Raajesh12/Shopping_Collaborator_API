@@ -181,10 +181,10 @@ class TaskApi(MethodView):
         task_description = json["task_description"]
         date = datetime.now()
         cur.execute("INSERT INTO tasks (gid, uid, task_description, created, last_modified) VALUES (%s, %s, %s, %s, %s) RETURNING id;", (gid, uid, task_description, date, date))
-        id = cur.fetchone()[0]
+        task_id = cur.fetchone()[0]
         conn.commit()
         cur.close()
-        return jsonify({"id": id}), 201
+        return jsonify({"id": task_id}), 201
 
 user_view = UserAPI.as_view('user_api')
 app.add_url_rule('/users/', view_func=user_view, methods=['POST',])
