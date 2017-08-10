@@ -180,7 +180,7 @@ class TaskApi(MethodView):
         gid = json["gid"]
         task_description = json["task_description"]
         date = datetime.now()
-        cur.execute("INSERT INTO tasks (gid, uid, task_description, created, last_modified) VALUES (%s, %s, %s, %s, %S) RETURNING id;", (gid, uid, task_description, date, date))
+        cur.execute("INSERT INTO tasks (gid, uid, task_description, created, last_modified) VALUES (%s, %s, %s, %s, %s) RETURNING id;", (gid, uid, task_description, date, date))
         id = cur.fetchone()[0]
         conn.commit()
         cur.close()
