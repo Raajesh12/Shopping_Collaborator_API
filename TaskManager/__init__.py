@@ -43,7 +43,7 @@ class UserAPI(MethodView):
         """
         auth = str(request.headers.get('Authorization'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
-            return {'data':auth}, 403
+            return jsonify({'data':auth}), 403
 
         json = request.get_json()
         first_name = json['first_name']
