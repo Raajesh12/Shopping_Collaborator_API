@@ -150,7 +150,8 @@ class GroupAPI(MethodView):
         cur = conn.cursor()
         json = request.get_json()
         group_name = json["group_name"]
-        cur.execute("UPDATE groups SET group_name = %s WHERE gid = %s;", (group_name, gid))
+        date = datetime.now()
+        cur.execute("UPDATE groups SET group_name = %s, last_modified = %s WHERE gid = %s;", (group_name, date, gid))
         conn.commit()
         cur.close()
         response = flask.Response(status=204)
