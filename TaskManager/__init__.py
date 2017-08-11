@@ -1,11 +1,13 @@
 import flask
-import base64
 from ast import literal_eval as make_tuple
 from flask import Flask, jsonify, request
 from flask.views import MethodView
 import psycopg2
 import traceback
 from datetime import datetime
+import sys
+sys.path.insert(0, '/var/www/')
+import encrypt as encrypt_functions
 
 app = Flask(__name__)
 
@@ -52,7 +54,7 @@ class UserAPI(MethodView):
         last_name = json['last_name']
         email = json['email']
         password = json['password']
-        encrypted_password = base64.b64encode(password)
+        encrypted_password = encrypt_functions.encrypt(password)
         dt = datetime.now()
         cur = conn.cursor()
         try:
@@ -100,7 +102,7 @@ class UserAPI(MethodView):
 
         password = json.get('password')
         if password is not None:
-            encrypted_password = base64.b64encode(password)
+            encrypted_password = encrypt_functions.encrypt(password)
             values_to_update['password'] = encrypted_password
 
         values_to_update['last_modified'] = str(datetime.now())
@@ -353,7 +355,7 @@ def validate_user():
     json = request.get_json()
     email = json['email']
     password = json['password']
-    encrypted_password = base64.b64encode(password)
+    encrypted_password = encrypt_functions.encrypt(password)
     cur = conn.cursor()
     cur.execute("SELECT * FROM users WHERE email = %s AND password = %s;", (email, encrypted_password))
     row = cur.fetchone()
