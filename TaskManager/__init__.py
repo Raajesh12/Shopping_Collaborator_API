@@ -237,7 +237,7 @@ class TaskAPI(MethodView):
                 components[i] = components[i].replace('(', '')
                 components[i] = components[i].replace('\"', '')
                 components[i] = components[i].replace(')', '')
-            row_data = {'first_name':components[0], 'last_name':components[1], 'task_id': compononets[2], 'task_description':components[3]}
+            row_data = {'first_name':components[0], 'last_name':components[1], 'task_id': components[2], 'task_description':components[3]}
             data['tasks'].append(row_data)
         cur.close()
         return jsonify(data), 200
