@@ -43,6 +43,11 @@ class UserAPI(MethodView):
             'email':<email>,
             'password':<email>
         }
+
+        Response
+        {
+            'uid':<uid>
+        }
         """
         auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
@@ -362,8 +367,8 @@ def validate_user():
     if row is None:
         response = flask.Response(status=401)
         return response
-    response = flask.Response(status=200)
-    return response
+    data = {'uid':row[0]}
+    return jsonify(data), 200
 
 app.add_url_rule('/', 'home', home, methods=['GET'])
 app.add_url_rule('/validate_user', 'validate_user', validate_user, methods=['POST'])
