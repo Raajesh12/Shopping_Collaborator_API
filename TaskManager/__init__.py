@@ -341,7 +341,9 @@ class GroupUserAPI(MethodView):
         count = int(cur.fetchone()[0])
         if count == 1:
             cur.execute("DELETE FROM groups WHERE gid = %s;", (gid,))
+            conn.commit()
             cur.execute("DELETE FROM tasks WHERE gid = %s;", (gid,))
+            conn.commit()
         cur.execute("DELETE FROM group_user_match WHERE gid = %s AND uid = %s;", (gid, uid))
         conn.commit()
         cur.close()
