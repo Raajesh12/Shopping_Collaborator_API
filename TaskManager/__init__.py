@@ -361,10 +361,16 @@ class GroupUserAPI(MethodView):
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
+
         cur = conn.cursor()
         gid = request.args.get("gid")
         uid = request.args.get("uid")
-        cur.execute("SELECT ")
+        cur.execute("SELECT (owner_uid) FROM groups WHERE gid = %s;",(gid,))
+        owner_uid = cur.fetchone()[0]
+        if uid == owner_uid:
+            response = flask.Response(status=400)
+            return response
+
         cur.execute("SELECT COUNT(*) FROM group_user_match WHERE gid = %s;", (gid,))
         count = int(cur.fetchone()[0])
         if count == 1:
