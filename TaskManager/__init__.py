@@ -319,8 +319,8 @@ class GroupUserAPI(MethodView):
         user_email = json["user_email"]
         dt = datetime.now()
         cur.execute("SELECT (uid) FROM users WHERE email = %s;", (user_email,))
-        uid = cur.fetchone()[0]
-        if(uid is None):
+        row = cur.fetchone()
+        if(row is None):
             return jsonify({"error": "user not found"}), 400
         cur.execute("INSERT INTO group_user_match (gid, uid, created, last_modified) VALUES (%s, %s, %s, %s);", (gid, uid, dt, dt))
         conn.commit()
