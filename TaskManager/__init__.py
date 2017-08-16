@@ -293,7 +293,6 @@ class TaskAPI(MethodView):
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
-
         cur = conn.cursor()
         cur.execute("DELETE FROM tasks WHERE id=%s", (task_id,))
         conn.commit()
@@ -338,6 +337,11 @@ class GroupUserAPI(MethodView):
         cur = conn.cursor()
         gid = request.args.get("gid")
         uid = request.args.get("uid")
+        cur.execute("SELECT COUNT(*) FROM group_user_match WHERE gid = %s;", (gid,))
+        count = int(cur.fetchone()[0])
+        if count == 1:
+            cur.execute("DELETE FROM groups WHERE gid = %s;", (gid,))
+            cur.execute("DELETE FROM tasks WHERE gid = %s;", (gid,))
         cur.execute("DELETE FROM group_user_match WHERE gid = %s AND uid = %s;", (gid, uid))
         conn.commit()
         cur.close()
