@@ -178,7 +178,7 @@ class GroupAPI(MethodView):
         group_name = json["group_name"]
         uid = json["uid"]
         date = datetime.now()
-        cur.execute("INSERT INTO groups (group_name, created, last_modified) VALUES (%s, %s, %s) RETURNING gid;", (group_name, date, date))
+        cur.execute("INSERT INTO groups (group_name, owner_uid, created, last_modified) VALUES (%s, %s, %s, %s) RETURNING gid;", (group_name, uid, date, date))
         gid = cur.fetchone()[0]
         cur.execute("INSERT INTO group_user_match (gid, uid, created, last_modified) VALUES (%s, %s, %s, %s);", (gid, uid, date, date))
         conn.commit()
@@ -207,12 +207,18 @@ class GroupAPI(MethodView):
         return response
 
     def delete(self, gid):
+    	uid = request.args.get("uid")
         auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
 
         cur = conn.cursor()
+        cur.execute("SELECT (owner_uid) FROM groups WHERE gid = %s;",(gid,))
+        owner_uid = cur.fetchone()[0]
+        if(uid != owner_uid)
+        	response = flask.Response(status=401)
+        	return response;     	
         cur.execute("DELETE FROM groups WHERE gid = %s;", (gid,))
         cur.execute("DELETE FROM group_user_match WHERE gid = %s;", (gid,))
         conn.commit()
