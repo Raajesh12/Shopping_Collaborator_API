@@ -349,6 +349,7 @@ class GroupUserAPI(MethodView):
         row = cur.fetchone()
         if(row is None):
             return jsonify({"error": "user not found"}), 400
+        uid = row[0]
         cur.execute("INSERT INTO group_user_match (gid, uid, created, last_modified) VALUES (%s, %s, %s, %s);", (gid, uid, dt, dt))
         conn.commit()
         cur.close()
