@@ -301,6 +301,26 @@ class TaskAPI(MethodView):
         return response
     
 class GroupUserAPI(MethodView):
+    def get(self):
+        auth = str(request.headers.get('Token'))
+        if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+            response = flask.Response(status=403)
+            return response
+
+        gid = request.args.get("gid")
+        cur = conn.cursor()
+
+        cur.execute("SELECT (users.uid, users.first_name, users.last_name) FROM users INNER JOIN (SELECT (group_user_match.uid) FROM group_user_match WHERE gid=%s) users_in_group ON users.uid = users_in_group.uid;", (gid,))
+        
+        data = {'users':[]}
+        for row in cur:
+            components = row[0].split(',')
+            components[0] = components[0].replace('(', '')
+            components[2] = components[2].replace(')', '')
+            row_data = {'uid':components[0], 'first_name':components[1], 'last_name':components[2]}
+            data['users'].append(row_data)
+        return jsonify(data), 200
+
     def post(self):
         """
         {
@@ -393,7 +413,7 @@ app.add_url_rule('/tasks', view_func=task_view, methods=['POST', 'GET'])
 app.add_url_rule('/tasks/<int:task_id>', view_func=task_view, methods=['PUT', 'DELETE'])
 
 group_user_view = GroupUserAPI.as_view('group_user_api')
-app.add_url_rule('/group_user', view_func=group_user_view, methods=['POST', 'DELETE'])
+app.add_url_rule('/group_user', view_func=group_user_view, methods=['GET', 'POST', 'DELETE'])
 
 if __name__ == "__main__":
     app.run()
