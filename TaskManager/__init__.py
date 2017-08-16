@@ -366,6 +366,7 @@ class GroupUserAPI(MethodView):
         gid = request.args.get("gid")
         uid = request.args.get("uid")
         cur.execute("SELECT (owner_uid) FROM groups WHERE gid = %s;",(gid,))
+        uid = int(uid)
         owner_uid = cur.fetchone()[0]
         if uid == owner_uid:
             response = flask.Response(status=400)
