@@ -316,6 +316,7 @@ class GroupUserAPI(MethodView):
         for row in cur:
             components = row[0].split(',')
             components[0] = components[0].replace('(', '')
+            components[0] = int(components[0])
             components[2] = components[2].replace(')', '')
             row_data = {'uid':components[0], 'first_name':components[1], 'last_name':components[2]}
             data['users'].append(row_data)
