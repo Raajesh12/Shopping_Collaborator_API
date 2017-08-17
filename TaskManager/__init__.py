@@ -230,7 +230,7 @@ class GroupAPI(MethodView):
         response = flask.Response(status=204)
         return response
     
-class TaskAPI(MethodView):
+class ItemsAPI(MethodView):
     def get(self):
         auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
@@ -239,16 +239,16 @@ class TaskAPI(MethodView):
 
         gid = request.args.get("gid")
         cur = conn.cursor()
-        cur.execute("SELECT (users.first_name, users.last_name, tasks.id, tasks.task_description) FROM tasks INNER JOIN users ON users.uid = tasks.uid WHERE tasks.gid=%s;", (gid,))
-        data = {'tasks' : []}
+        cur.execute("SELECT (users.first_name, users.last_name, tasks.id, tasks.item_name) FROM tasks INNER JOIN users ON users.uid = tasks.uid WHERE tasks.gid=%s;", (gid,))
+        data = {'items' : []}
         for row in cur:
             components = row[0].split(',')
             for i in range(0, len(components)):
                 components[i] = components[i].replace('(', '')
                 components[i] = components[i].replace('\"', '')
                 components[i] = components[i].replace(')', '')
-            row_data = {'first_name':components[0], 'last_name':components[1], 'task_id': components[2], 'task_description':components[3]}
-            data['tasks'].append(row_data)
+            row_data = {'first_name':components[0], 'last_name':components[1], 'item_id': components[2], 'item_name':components[3]}
+            data['items'].append(row_data)
         cur.close()
         return jsonify(data), 200
 
@@ -257,7 +257,8 @@ class TaskAPI(MethodView):
         {
          "uid":<uid>
          "gid":<gid>
-         "task_description":<task_description>
+         "item_name":<item_name>
+         "estimate":<estimate>
         }
         """
         auth = str(request.headers.get('Token'))
@@ -269,18 +270,21 @@ class TaskAPI(MethodView):
         json = request.get_json()
         uid = json["uid"]
         gid = json["gid"]
-        task_description = json["task_description"]
+        item_name = json["item_name"]
+        estimate = json["estimate"]
         date = datetime.now()
-        cur.execute("INSERT INTO tasks (gid, uid, task_description, created, last_modified) VALUES (%s, %s, %s, %s, %s) RETURNING id;", (gid, uid, task_description, date, date))
-        task_id = cur.fetchone()[0]
+        actual = 0.00
+        cur.execute("INSERT INTO tasks (gid, uid, item_name, estimate, actual, created, last_modified) VALUES (%s, %s, %s, %s, %s) RETURNING id;", (gid, uid, item_name, estimate, actual, date, date))
+        item_id = cur.fetchone()[0]
         conn.commit()
         cur.close()
-        return jsonify({"id": task_id}), 201
+        return jsonify({"id": item_id}), 201
     
-    def put(self, task_id):
+    def put(self, item_id):
         """
         {
-        "task_description": <task_description>
+        "item_name": <item_name>
+        "estimate": <estimate>
         }
         """
         auth = str(request.headers.get('Token'))
@@ -290,21 +294,22 @@ class TaskAPI(MethodView):
 
         cur = conn.cursor()
         json = request.get_json()
-        task_description = json["task_description"]
+        item_name = json["item_name"]
+        estimate = json["estimate"]
         dt = datetime.now()
-        cur.execute("UPDATE tasks SET task_description = %s, last_modified = %s WHERE id = %s;", (task_description, dt, task_id))
+        cur.execute("UPDATE tasks SET item_name = %s, estimate = %s, last_modified = %s WHERE id = %s;", (item_name, estimate, dt, item_id))
         conn.commit()
         cur.close()
         response = flask.Response(status=204)
         return response
 
-    def delete(self, task_id):
+    def delete(self, item_id):
         auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
         cur = conn.cursor()
-        cur.execute("DELETE FROM tasks WHERE id=%s", (task_id,))
+        cur.execute("DELETE FROM tasks WHERE id=%s", (item_id,))
         conn.commit()
         cur.close()
         response = flask.Response(status=204)
@@ -427,9 +432,9 @@ app.add_url_rule('/groups', view_func=group_view, methods=['GET'])
 app.add_url_rule('/groups/', view_func=group_view, methods=['POST',])
 app.add_url_rule('/groups/<int:gid>', view_func=group_view, methods=['PUT', 'DELETE'])
 
-task_view = TaskAPI.as_view('task_api')
-app.add_url_rule('/tasks', view_func=task_view, methods=['POST', 'GET'])
-app.add_url_rule('/tasks/<int:task_id>', view_func=task_view, methods=['PUT', 'DELETE'])
+item_view = ItemsAPI.as_view('item_view')
+app.add_url_rule('/items', view_func=item_view, methods=['POST', 'GET'])
+app.add_url_rule('/items/<int:item_id>', view_func=item_view, methods=['PUT', 'DELETE'])
 
 group_user_view = GroupUserAPI.as_view('group_user_api')
 app.add_url_rule('/group_user', view_func=group_user_view, methods=['GET', 'POST', 'DELETE'])
