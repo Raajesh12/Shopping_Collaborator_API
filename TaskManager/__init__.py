@@ -154,8 +154,12 @@ class GroupAPI(MethodView):
         cur.execute("SELECT (group_user_match.gid, groups.group_name) FROM group_user_match INNER JOIN groups ON group_user_match.gid = groups.gid WHERE group_user_match.uid=%s", (uid,))
         data = {'groups' : []}
         for row in cur:
-            row_tuple = make_tuple(row[0])
-            row_data = {'gid':row_tuple[0], 'group_name':row_tuple[1]}
+            components = row[0].split(',')
+            components[0] = components[0].replace('(', '')
+            components[0] = int(components[0])
+            components[1] = components[1].replace('"', '')
+            components[1] = components[1].replace(')','')
+            row_data = {'gid':components[0], 'group_name':components[1]}
             data['groups'].append(row_data)
         cur.close()
         return jsonify(data), 200
