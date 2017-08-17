@@ -274,7 +274,7 @@ class ItemsAPI(MethodView):
         estimate = json["estimate"]
         date = datetime.now()
         actual = 0.00
-        cur.execute("INSERT INTO tasks (gid, uid, item_name, estimate, actual, created, last_modified) VALUES (%s, %s, %s, %s, %s) RETURNING id;", (gid, uid, item_name, estimate, actual, date, date))
+        cur.execute("INSERT INTO tasks (gid, uid, item_name, estimate, actual, created, last_modified) VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id;", (gid, uid, item_name, estimate, actual, date, date))
         item_id = cur.fetchone()[0]
         conn.commit()
         cur.close()
