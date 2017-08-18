@@ -239,7 +239,7 @@ class ItemsAPI(MethodView):
 
         gid = request.args.get("gid")
         cur = conn.cursor()
-        cur.execute("SELECT (users.first_name, users.last_name, tasks.id, tasks.item_name) FROM tasks INNER JOIN users ON users.uid = tasks.uid WHERE tasks.gid=%s;", (gid,))
+        cur.execute("SELECT (users.first_name, users.last_name, items.id, items.item_name, items.estimate) FROM items INNER JOIN users ON users.uid = items.uid WHERE items.gid=%s and items.done=%s;", (gid, False))
         data = {'items' : []}
         for row in cur:
             components = row[0].split(',')
@@ -247,7 +247,7 @@ class ItemsAPI(MethodView):
                 components[i] = components[i].replace('(', '')
                 components[i] = components[i].replace('\"', '')
                 components[i] = components[i].replace(')', '')
-            row_data = {'first_name':components[0], 'last_name':components[1], 'item_id': components[2], 'item_name':components[3]}
+            row_data = {'first_name':components[0], 'last_name':components[1], 'item_id': components[2], 'item_name':components[3], 'estimate':components[4]}
             data['items'].append(row_data)
         cur.close()
         return jsonify(data), 200
@@ -272,9 +272,10 @@ class ItemsAPI(MethodView):
         gid = json["gid"]
         item_name = json["item_name"]
         estimate = json["estimate"]
-        date = datetime.now()
         actual = 0.00
-        cur.execute("INSERT INTO tasks (gid, uid, item_name, estimate, actual, created, last_modified) VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id;", (gid, uid, item_name, estimate, actual, date, date))
+        done = False
+        date = datetime.now()
+        cur.execute("INSERT INTO items (gid, uid, item_name, estimate, actual, done, created, last_modified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;", (gid, uid, item_name, estimate, actual, done, date, date))
         item_id = cur.fetchone()[0]
         conn.commit()
         cur.close()
@@ -285,6 +286,7 @@ class ItemsAPI(MethodView):
         {
         "item_name": <item_name>
         "estimate": <estimate>
+        "done":<boolean>
         }
         """
         auth = str(request.headers.get('Token'))
@@ -296,8 +298,9 @@ class ItemsAPI(MethodView):
         json = request.get_json()
         item_name = json["item_name"]
         estimate = json["estimate"]
+        done = json["done"]
         dt = datetime.now()
-        cur.execute("UPDATE tasks SET item_name = %s, estimate = %s, last_modified = %s WHERE id = %s;", (item_name, estimate, dt, item_id))
+        cur.execute("UPDATE items SET item_name = %s, estimate = %s, done = %s, last_modified = %s WHERE id = %s;", (item_name, estimate, done, dt, item_id))
         conn.commit()
         cur.close()
         response = flask.Response(status=204)
@@ -309,7 +312,7 @@ class ItemsAPI(MethodView):
             response = flask.Response(status=403)
             return response
         cur = conn.cursor()
-        cur.execute("DELETE FROM tasks WHERE id=%s", (item_id,))
+        cur.execute("DELETE FROM items WHERE id=%s", (item_id,))
         conn.commit()
         cur.close()
         response = flask.Response(status=204)
@@ -386,7 +389,7 @@ class GroupUserAPI(MethodView):
         if count == 1:
             cur.execute("DELETE FROM groups WHERE gid = %s;", (gid,))
             conn.commit()
-            cur.execute("DELETE FROM tasks WHERE gid = %s;", (gid,))
+            cur.execute("DELETE FROM items WHERE gid = %s;", (gid,))
             conn.commit()
         cur.execute("DELETE FROM group_user_match WHERE gid = %s AND uid = %s;", (gid, uid))
         conn.commit()
