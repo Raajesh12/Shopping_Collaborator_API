@@ -286,6 +286,7 @@ class ItemsAPI(MethodView):
         {
         "item_name": <item_name>
         "estimate": <estimate>
+        "actual":<actual>
         "done":<boolean>
         }
         """
@@ -298,9 +299,10 @@ class ItemsAPI(MethodView):
         json = request.get_json()
         item_name = json["item_name"]
         estimate = json["estimate"]
+        actual = json["actual"]
         done = json["done"]
-        dt = datetime.now()
-        cur.execute("UPDATE items SET item_name = %s, estimate = %s, done = %s, last_modified = %s WHERE id = %s;", (item_name, estimate, done, dt, item_id))
+        date = datetime.now()
+        cur.execute("UPDATE items SET item_name = %s, estimate = %s, actual = %s, done = %s, last_modified = %s WHERE id = %s;", (item_name, estimate, actual, done, date, item_id))
         conn.commit()
         cur.close()
         response = flask.Response(status=204)
