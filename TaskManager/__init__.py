@@ -308,14 +308,13 @@ class ItemsAPI(MethodView):
         response = flask.Response(status=204)
         return response
 
-    def delete(self):
+    def delete(self, item_id):
         auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
-        gid = request.args.get("gid")
         cur = conn.cursor()
-        cur.execute("DELETE FROM items WHERE gid=%s", (gid,))
+        cur.execute("DELETE FROM items WHERE id=%s", (item_id,))
         conn.commit()
         cur.close()
         response = flask.Response(status=204)
@@ -439,8 +438,8 @@ app.add_url_rule('/groups/', view_func=group_view, methods=['POST',])
 app.add_url_rule('/groups/<int:gid>', view_func=group_view, methods=['PUT', 'DELETE'])
 
 item_view = ItemsAPI.as_view('item_view')
-app.add_url_rule('/items', view_func=item_view, methods=['POST', 'GET', 'DELETE'])
-app.add_url_rule('/items/<int:item_id>', view_func=item_view, methods=['PUT'])
+app.add_url_rule('/items', view_func=item_view, methods=['POST', 'GET'])
+app.add_url_rule('/items/<int:item_id>', view_func=item_view, methods=['PUT', 'DELETE'])
 
 group_user_view = GroupUserAPI.as_view('group_user_api')
 app.add_url_rule('/group_user', view_func=group_user_view, methods=['GET', 'POST', 'DELETE'])
