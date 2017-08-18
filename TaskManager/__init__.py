@@ -422,11 +422,33 @@ def validate_user():
     if row is None:
         response = flask.Response(status=401)
         return response
+    cur.close()
     data = {'uid':row[0]}
     return jsonify(data), 200
 
+def delete_items_group():
+    auth = str(request.headers.get('Token'))
+    if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+        response = flask.Response(status=403)
+        return response
+    cur = conn.cursor()
+    gid = request.args.get("gid")
+    uid = request.args.get("uid")
+    cur.execute()
+    cur.execute("SELECT (owner_uid) FROM groups WHERE gid = %s;",(gid,))
+    owner_uid = cur.fetchone()[0]
+    if uid != owner_uid:
+        response = flask.Response(status=401)
+        return response;
+    cur.execute("DELETE FROM items WHERE gid=%s", (gid,))
+    conn.commit()
+    cur.close()
+    response = flask.Response(status=204)
+    return response
+
 app.add_url_rule('/', 'home', home, methods=['GET'])
 app.add_url_rule('/validate_user', 'validate_user', validate_user, methods=['POST'])
+app.add_url_rule('/items/delete_all', 'delete_items_group', delete_items_group, methods=['DELETE'])
 
 user_view = UserAPI.as_view('user_api')
 app.add_url_rule('/users/', view_func=user_view, methods=['POST',])
