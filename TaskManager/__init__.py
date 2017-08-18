@@ -212,6 +212,7 @@ class GroupAPI(MethodView):
 
     def delete(self, gid):
         uid = request.args.get("uid")
+        uid = int(uid)
         auth = str(request.headers.get('Token'))
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
@@ -380,8 +381,8 @@ class GroupUserAPI(MethodView):
         cur = conn.cursor()
         gid = request.args.get("gid")
         uid = request.args.get("uid")
-        cur.execute("SELECT (owner_uid) FROM groups WHERE gid = %s;",(gid,))
         uid = int(uid)
+        cur.execute("SELECT (owner_uid) FROM groups WHERE gid = %s;",(gid,))
         owner_uid = cur.fetchone()[0]
         if uid == owner_uid:
             response = flask.Response(status=400)
