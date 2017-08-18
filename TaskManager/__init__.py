@@ -225,6 +225,7 @@ class GroupAPI(MethodView):
             return response;        
         cur.execute("DELETE FROM groups WHERE gid = %s;", (gid,))
         cur.execute("DELETE FROM group_user_match WHERE gid = %s;", (gid,))
+        cur.execute("DELETE FROM items WHERE gid = %s", (gid,))
         conn.commit()
         cur.close()
         response = flask.Response(status=204)
@@ -434,6 +435,7 @@ def delete_items_group():
     cur = conn.cursor()
     gid = request.args.get("gid")
     uid = request.args.get("uid")
+    uid = int(uid)
     cur.execute("SELECT (owner_uid) FROM groups WHERE gid = %s;",(gid,))
     owner_uid = cur.fetchone()[0]
     if uid != owner_uid:
