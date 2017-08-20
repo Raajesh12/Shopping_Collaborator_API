@@ -477,7 +477,7 @@ def items_complete_count():
     cur.execute("SELECT COUNT(*) FROM items WHERE gid = %s and done = %s", (gid, True))
     complete_items = cur.fetchone()[0]
 
-    data = {'complete_items': complete_items, 'total_items': total_items}
+    data = {'items_bought': complete_items, 'total_items': total_items}
     return jsonify(data), 200
 
 
