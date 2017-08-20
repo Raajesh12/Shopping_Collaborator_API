@@ -448,9 +448,24 @@ def delete_items_group():
     response = flask.Response(status=204)
     return response
 
+def add_total_price():
+    auth = str(request.headers.get('Token'))
+    if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+        response = flask.Response(status=403)
+        return response
+    cur = conn.cursor()
+    gid = request.args.get("gid")
+    cur.execute("SELECT (actual) FROM items WHERE gid = %s and done = %s", (gid, True))
+    total = 0.0
+    for row in cur:
+        total += row[0]
+    data = {'total': total}
+    return jsonify(data), 200
+
 app.add_url_rule('/', 'home', home, methods=['GET'])
 app.add_url_rule('/validate_user', 'validate_user', validate_user, methods=['POST'])
 app.add_url_rule('/items/delete_all', 'delete_items_group', delete_items_group, methods=['DELETE'])
+app.add_url_rule('/add_total_price', 'add_total_price', add_total_price, methods=['GET'])
 
 user_view = UserAPI.as_view('user_api')
 app.add_url_rule('/users/', view_func=user_view, methods=['POST',])
