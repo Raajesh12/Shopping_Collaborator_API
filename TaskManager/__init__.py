@@ -458,7 +458,8 @@ def add_total_price():
     cur.execute("SELECT (actual) FROM items WHERE gid = %s and done = %s", (gid, True))
     total = 0.0
     for row in cur:
-        total += row[0]
+        item_price = "{0:.2f}".format(row[0])
+        total += item_price
     data = {'total': total}
     return jsonify(data), 200
 
