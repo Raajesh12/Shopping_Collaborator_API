@@ -459,8 +459,8 @@ def add_total_price():
     total = 0.0
     for row in cur:
         total += row[0]
-    total = "{0:.2f}".format(total_string)
-    data = {'total': total}
+    total_string = "{0:.2f}".format(total)
+    data = {'total': total_string}
     return jsonify(data), 200
 
 app.add_url_rule('/', 'home', home, methods=['GET'])
