@@ -11,7 +11,7 @@ import encrypt as encrypt_functions
 
 app = Flask(__name__)
 
-# conn = psycopg2.connect(dbname="taskbase", user="www-data")
+conn = psycopg2.connect(dbname="shopping_collaborator", user="www-data")
 
 def home():
     return jsonify({'home': 'This is the homepage'}), 200
