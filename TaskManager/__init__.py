@@ -317,16 +317,13 @@ class ItemsAPI(MethodView):
             return response
         cur = conn.cursor()
         item_id_numbers = request.args.getlist("item_id")
-        # for item_id in item_id_numbers:
-        #     cur.execute("DELETE FROM items WHERE id=%s", (item_id_numbers,))
-        # else:
-        #     for item_id in item_id_numbers:
-        #         cur.execute("DELETE FROM items WHERE id=%s", (item_id,))
-        # conn.commit()
-        # cur.close()
-        # response = flask.Response(status=204)
-        data = {'data':str(type(int(item_id_numbers[0])))}
-        return jsonify(data), 200
+        for item_id_string in item_id_numbers:
+            item_id = int(item_id_string)
+            cur.execute("DELETE FROM items WHERE id=%s", (item_id,))
+        conn.commit()
+        cur.close()
+        response = flask.Response(status=204)
+        return response
     
 class GroupUserAPI(MethodView):
     def get(self):
