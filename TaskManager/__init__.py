@@ -326,7 +326,7 @@ class ItemsAPI(MethodView):
         cur.close()
         # response = flask.Response(status=204)
         data = {'data':str(item_id_numbers), 'type':type(item_id_numbers)}
-        return data, 200
+        return jsonify(data), 200
     
 class GroupUserAPI(MethodView):
     def get(self):
