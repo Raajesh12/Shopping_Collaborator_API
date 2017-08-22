@@ -410,13 +410,13 @@ def validate_current_user():
     if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
         response = flask.Response(status=403)
         return response
-        
+
     json = request.get_json()
     uid = json["uid"]
     entered_email = json["email"]
     entered_password = json["password"]
     cur = conn.cursor()
-    cur.execute("SELECT * FROM users WHERE uid = %s", (uid))
+    cur.execute("SELECT * FROM users WHERE uid = %s", (uid,))
     row = cur.fetchone()
     user_email = row[3]
     user_password = encrypt_functions.decrypt(row[4])
