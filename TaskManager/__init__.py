@@ -335,7 +335,7 @@ class GroupUserAPI(MethodView):
         gid = request.args.get("gid")
         cur = conn.cursor()
 
-        cur.execute("SELECT (users.uid, users.first_name, users.last_name) FROM users INNER JOIN (SELECT (group_user_match.uid) FROM group_user_match WHERE gid=%s) users_in_group ON users.uid = users_in_group.uid;", (gid,))
+        cur.execute("SELECT (users.uid, users.email, users.first_name, users.last_name) FROM users INNER JOIN (SELECT (group_user_match.uid) FROM group_user_match WHERE gid=%s) users_in_group ON users.uid = users_in_group.uid;", (gid,))
         
         data = {'users':[]}
         for row in cur:
