@@ -420,7 +420,7 @@ def validate_current_user():
     user_email = row[3]
     user_password = encrypt_functions.decrypt(row[4])
 
-    not_current_user = !((entered_email == user_email) && (entered_password == user_password))
+    not_current_user = !((entered_email == user_email) and (entered_password == user_password))
     if(not_current_user):
         response = flask.Response(status=401)
         return response
