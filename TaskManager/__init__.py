@@ -30,6 +30,7 @@ class UserAPI(MethodView):
             'first_name': row[1],
             'last_name': row[2],
             'email': row[3]
+            'password': encrypt_functions.decrypt(row[4])
         }
         cur.close()
         return jsonify(data), 200
