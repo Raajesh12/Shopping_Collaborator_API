@@ -317,7 +317,7 @@ class ItemsAPI(MethodView):
             return response
         cur = conn.cursor()
         item_id_numbers = request.args.get("item_id")
-        if type(uid) != list:
+        if type(item_id_numbers) != list:
             cur.execute("DELETE FROM items WHERE id=%s", (item_id_numbers,))
         else:
             for item_id in item_id_numbers:
