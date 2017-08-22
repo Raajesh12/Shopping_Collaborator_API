@@ -405,6 +405,29 @@ class GroupUserAPI(MethodView):
         response = flask.Response(status=204)
         return response
 
+def validate_current_user():
+    auth = str(request.headers.get('Token'))
+    if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+        response = flask.Response(status=403)
+        return response
+
+    uid = json["uid"]
+    entered_email = json["email"]
+    entered_password = json["password"]
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE uid = %s", (uid))
+    row = cur.fetchone()
+    user_email = row[3]
+    user_password = encrypt_functions.decrypt(row[4])
+
+    not_current_user = !((entered_email == user_email) && (entered_password == user_password))
+    if(not_current_user):
+        response = flask.Response(status=401)
+        return response
+
+    response = flask.Response(status=204)
+    return response
+
 def validate_user():
     """
     JSON format
@@ -487,6 +510,7 @@ def items_complete_count():
 
 app.add_url_rule('/', 'home', home, methods=['GET'])
 app.add_url_rule('/validate_user', 'validate_user', validate_user, methods=['POST'])
+app.add_url_rule('/validate_current_user', 'validate_current_user', validate_current_user, methods=['POST'])
 app.add_url_rule('/items/delete_all', 'delete_items_group', delete_items_group, methods=['DELETE'])
 app.add_url_rule('/add_total_price', 'add_total_price', add_total_price, methods=['GET'])
 app.add_url_rule('/items_completed', 'items_completed', items_complete_count, methods=['GET'])
