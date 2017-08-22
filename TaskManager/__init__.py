@@ -342,7 +342,7 @@ class GroupUserAPI(MethodView):
             components = row[0].split(',')
             components[0] = components[0].replace('(', '')
             components[0] = int(components[0])
-            components[3] = components[2].replace(')', '')
+            components[3] = components[3].replace(')', '')
             row_data = {'uid':components[0], 'email': components[1], 'first_name':components[2], 'last_name':components[3]}
             data['users'].append(row_data)
         return jsonify(data), 200
