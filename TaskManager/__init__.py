@@ -325,7 +325,7 @@ class ItemsAPI(MethodView):
         # conn.commit()
         # cur.close()
         # response = flask.Response(status=204)
-        data = {'data':str(request.args.getlist("item_id")), 'type':type(item_id_numbers)}
+        data = {'data':str(request.args.getlist("item_id"))}
         return jsonify(data), 200
     
 class GroupUserAPI(MethodView):
