@@ -315,9 +315,9 @@ class ItemsAPI(MethodView):
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
-        # cur = conn.cursor()
+        cur = conn.cursor()
         item_id_numbers = request.args.getlist("item_id")
-        # if type(item_id_numbers) != list:
+        # for item_id in item_id_numbers:
         #     cur.execute("DELETE FROM items WHERE id=%s", (item_id_numbers,))
         # else:
         #     for item_id in item_id_numbers:
@@ -325,7 +325,7 @@ class ItemsAPI(MethodView):
         # conn.commit()
         # cur.close()
         # response = flask.Response(status=204)
-        data = {'data':str(type(item_id_numbers))}
+        data = {'data':str(type(item_id_numbers[0]))}
         return jsonify(data), 200
     
 class GroupUserAPI(MethodView):
