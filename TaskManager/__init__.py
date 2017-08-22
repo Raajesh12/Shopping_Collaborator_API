@@ -316,16 +316,17 @@ class ItemsAPI(MethodView):
             response = flask.Response(status=403)
             return response
         cur = conn.cursor()
-        item_id_numbers = request.args.get("item_id")
-        if type(item_id_numbers) != list:
-            cur.execute("DELETE FROM items WHERE id=%s", (item_id_numbers,))
-        else:
-            for item_id in item_id_numbers:
-                cur.execute("DELETE FROM items WHERE id=%s", (item_id,))
-        conn.commit()
+        item_id_numbers = request.args.getlist("item_id")
+        # if type(item_id_numbers) != list:
+        #     cur.execute("DELETE FROM items WHERE id=%s", (item_id_numbers,))
+        # else:
+        #     for item_id in item_id_numbers:
+        #         cur.execute("DELETE FROM items WHERE id=%s", (item_id,))
+        # conn.commit()
         cur.close()
-        response = flask.Response(status=204)
-        return response
+        # response = flask.Response(status=204)
+        data = {'data':str(item_id_numbers), 'type':type(item_id_numbers)}
+        return data, 200
     
 class GroupUserAPI(MethodView):
     def get(self):
