@@ -206,6 +206,11 @@ class GroupAPI(MethodView):
         group_name = json["group_name"]
         date = datetime.now()
         cur.execute("UPDATE groups SET group_name = %s, last_modified = %s WHERE gid = %s;", (group_name, date, gid))
+
+        cur.execute("SELECT (uid) FROM group_user_match WHERE gid = %s", (gid,))
+        for row in cur:
+            uid = row[0]
+            cur.execute("UPDATE users SET last_modified = %s WHERE uid = %s", (date, uid))
         conn.commit()
         cur.close()
         response = flask.Response(status=204)
@@ -507,6 +512,16 @@ def items_complete_count():
 
     data = {'items_bought': complete_items, 'total_items': total_items}
     return jsonify(data), 200
+
+def get_group_last_modified():
+    auth = str(request.headers.get('Token'))
+    if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+        response = flask.Response(status=403)
+        return response
+    gid = request.args.get("uid")
+    cur = conn.cursor()
+
+    cur.execute("SELECT (last_modified) FROM group_user_match WHERE gid = %s")
 
 
 app.add_url_rule('/', 'home', home, methods=['GET'])
