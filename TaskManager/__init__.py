@@ -234,17 +234,18 @@ class GroupAPI(MethodView):
             response = flask.Response(status=401)
             return response; 
 
-        cur.execute("SELECT (uid) FROM group_user_match WHERE gid = %s", (gid,))
-        for row in cur:
+        cur1 = conn.cursor()
+        cur1.execute("SELECT (uid) FROM group_user_match WHERE gid = %s", (gid,))
+        for row in cur1:
             cur2 = conn.cursor()
             uid = row[0]
             cur2.execute("UPDATE users SET last_modified = %s WHERE uid = %s", (date, uid))
             cur2.close()
-
+        cur1.close()
         cur.execute("DELETE FROM groups WHERE gid = %s;", (gid,))
         cur.execute("DELETE FROM group_user_match WHERE gid = %s;", (gid,))
         cur.execute("DELETE FROM items WHERE gid = %s", (gid,))
-        
+
         conn.commit()
         cur.close()
         response = flask.Response(status=204)
