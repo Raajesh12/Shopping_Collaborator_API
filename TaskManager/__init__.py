@@ -389,6 +389,7 @@ class GroupUserAPI(MethodView):
             return jsonify({"error": "user not found"}), 400
         uid = row[0]
         cur.execute("INSERT INTO group_user_match (gid, uid, created, last_modified) VALUES (%s, %s, %s, %s);", (gid, uid, dt, dt))
+        cur.execute("UPDATE users SET last_modified = %s WHERE uid = %s", (dt, uid))
         conn.commit()
         cur.close()
         response = flask.Response(status=201)
@@ -418,6 +419,8 @@ class GroupUserAPI(MethodView):
             cur.execute("DELETE FROM items WHERE gid = %s;", (gid,))
             conn.commit()
         cur.execute("DELETE FROM group_user_match WHERE gid = %s AND uid = %s;", (gid, uid))
+        dt = datetime.now()
+        cur.execute("UPDATE users SET last_modified = %s WHERE uid = %s", (dt, uid))
         conn.commit()
         cur.close()
         response = flask.Response(status=204)
