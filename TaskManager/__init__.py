@@ -225,7 +225,7 @@ class GroupAPI(MethodView):
         if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
             response = flask.Response(status=403)
             return response
-
+        date = datetime.now()
         cur = conn.cursor()
 
         cur.execute("SELECT (owner_uid) FROM groups WHERE gid = %s;",(gid,))
