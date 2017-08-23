@@ -529,15 +529,25 @@ def items_complete_count():
     data = {'items_bought': complete_items, 'total_items': total_items}
     return jsonify(data), 200
 
-def get_group_last_modified():
+def get_user_last_modified():
     auth = str(request.headers.get('Token'))
     if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
         response = flask.Response(status=403)
         return response
-    gid = request.args.get("uid")
+    uid = request.args.get("uid")
     cur = conn.cursor()
+    cur.execute("SELECT (last_modified) FROM users WHERE uid = %s", (uid,))
+    last_modified = cur.fetchone()[0]
+    data = {
+            'year': last_modified.year,
+            'month': last_modified.month,
+            'day': last_modified.day,
+            'hour': last_modified.hour,
+            'minute': last_modified.minute,
+            'second': last_modified.second
+        }
+    return jsonify(data), 200
 
-    cur.execute("SELECT (last_modified) FROM group_user_match WHERE gid = %s")
 
 
 app.add_url_rule('/', 'home', home, methods=['GET'])
@@ -546,6 +556,7 @@ app.add_url_rule('/validate_current_user', 'validate_current_user', validate_cur
 app.add_url_rule('/items/delete_all', 'delete_items_group', delete_items_group, methods=['DELETE'])
 app.add_url_rule('/add_total_price', 'add_total_price', add_total_price, methods=['GET'])
 app.add_url_rule('/items_completed', 'items_completed', items_complete_count, methods=['GET'])
+app.add_url_rule('/get_user_last_modified', 'get_user_last_modified', get_user_last_modified, methods = ['GET'])
 
 user_view = UserAPI.as_view('user_api')
 app.add_url_rule('/users/', view_func=user_view, methods=['POST',])
