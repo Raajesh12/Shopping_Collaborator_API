@@ -297,6 +297,7 @@ class ItemsAPI(MethodView):
         done = False
         date = datetime.now()
         cur.execute("INSERT INTO items (gid, uid, item_name, estimate, actual, done, created, last_modified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;", (gid, uid, item_name, estimate, actual, done, date, date))
+        cur.execute("UPDATE groups SET last_modified = %s WHERE gid = %s", (date, gid))
         item_id = cur.fetchone()[0]
         conn.commit()
         cur.close()
@@ -324,6 +325,10 @@ class ItemsAPI(MethodView):
         done = json["done"]
         date = datetime.now()
         cur.execute("UPDATE items SET item_name = %s, estimate = %s, actual = %s, done = %s, last_modified = %s WHERE id = %s;", (item_name, estimate, actual, done, date, item_id))
+        cur.execute("SELECT (gid) FROM items WHERE id = %s", (item_id,))
+        row = cur.fetchone()
+        gid = row[0]
+        cur.execute("UPDATE groups SET last_modified = %s WHERE gid = %s", (date, gid))
         conn.commit()
         cur.close()
         response = flask.Response(status=204)
@@ -336,6 +341,11 @@ class ItemsAPI(MethodView):
             return response
         cur = conn.cursor()
         item_id_numbers = request.args.getlist("item_id")
+        cur.execute("SELECT (gid) FROM items WHERE id = %s", (item_id_numbers[0],))
+        row = cur.fetchone()
+        gid = row[0]
+        date = datetime.now()
+        cur.execute("UPDATE groups SET last_modified = %s WHERE gid = %s", (date, gid))
         for item_id_string in item_id_numbers:
             item_id = int(item_id_string)
             cur.execute("DELETE FROM items WHERE id=%s", (item_id,))
@@ -492,6 +502,8 @@ def delete_items_group():
         response = flask.Response(status=401)
         return response;
     cur.execute("DELETE FROM items WHERE gid=%s", (gid,))
+    date = datetime.now()
+    cur.execute("UPDATE groups SET last_modified = %s WHERE gid = %s", (date, gid))
     conn.commit()
     cur.close()
     response = flask.Response(status=204)
@@ -548,7 +560,24 @@ def get_user_last_modified():
         }
     return jsonify(data), 200
 
-
+def get_group_last_modified():
+    auth = str(request.headers.get('Token'))
+    if auth != '5c8ab94e-3c95-40f9-863d-e31ae49e5d8d':
+        response = flask.Response(status=403)
+        return response
+    gid = request.args.get("gid")
+    cur = conn.cursor()
+    cur.execute("SELECT (last_modified) FROM groups WHERE gid = %s", (gid,))
+    last_modified = cur.fetchone()[0]
+    data = {
+            'year': last_modified.year,
+            'month': last_modified.month,
+            'day': last_modified.day,
+            'hour': last_modified.hour,
+            'minute': last_modified.minute,
+            'second': last_modified.second
+        }
+    return jsonify(data), 200
 
 app.add_url_rule('/', 'home', home, methods=['GET'])
 app.add_url_rule('/validate_user', 'validate_user', validate_user, methods=['POST'])
@@ -556,7 +585,8 @@ app.add_url_rule('/validate_current_user', 'validate_current_user', validate_cur
 app.add_url_rule('/items/delete_all', 'delete_items_group', delete_items_group, methods=['DELETE'])
 app.add_url_rule('/add_total_price', 'add_total_price', add_total_price, methods=['GET'])
 app.add_url_rule('/items_completed', 'items_completed', items_complete_count, methods=['GET'])
-app.add_url_rule('/get_user_last_modified', 'get_user_last_modified', get_user_last_modified, methods = ['GET'])
+app.add_url_rule('/user_last_modified', 'get_user_last_modified', get_user_last_modified, methods = ['GET'])
+app.add_url_rule('/group_last_modified', 'get_group_last_modified', get_group_last_modified, methods = ['GET'])
 
 user_view = UserAPI.as_view('user_api')
 app.add_url_rule('/users/', view_func=user_view, methods=['POST',])
