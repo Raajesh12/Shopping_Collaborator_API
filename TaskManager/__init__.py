@@ -297,8 +297,8 @@ class ItemsAPI(MethodView):
         done = False
         date = datetime.now()
         cur.execute("INSERT INTO items (gid, uid, item_name, estimate, actual, done, created, last_modified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;", (gid, uid, item_name, estimate, actual, done, date, date))
-        cur.execute("UPDATE groups SET last_modified = %s WHERE gid = %s", (date, gid))
         item_id = cur.fetchone()[0]
+        cur.execute("UPDATE groups SET last_modified = %s WHERE gid = %s;", (date, gid))
         conn.commit()
         cur.close()
         return jsonify({"id": item_id}), 201
